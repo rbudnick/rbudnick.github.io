@@ -1,36 +1,4 @@
 
-<!--
-INTERFACE FIXES:
-Template tables: ARIA grid w/ keyboard navigation
-Template tables: screenreader compatibility
-Make output boxes aria-live="polite"
-Input box ARIA
-Disclosure pattern for More/Less
-Resizing trees in subwindows
-Resizing trees with appropriate minimum height
-Pressing "delete" on S will clear all children?
- -> maybe will clear label to '...'?
-Minor input box UI around line-breaks (also, final space in output boxes)
-UI box need to lock after completing (and load locked state correctly)
-Add outlines for labels that need to be filled? -> An underling might work nicely
--->
-
-<!--
-LOADING BUGS:
-Make sure that all enabling and disabling of buttons is appropriate
-Make sure that input box 'editing' is appropriate
-Something with input box loading and cursors
-Once saw "continue" button before answering "Identifying bad rules"
--->
-
-
-<!--
-CONTENT FIXES:
-Need menu for skipping around
-"Generate all strings" retooling
--->
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -102,6 +70,9 @@ const sectionStarts = new Map();
 var state = ['frontmatter','intro'];
 var progressBarChunks = [[1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,2,1,3,2],[3,2,3,3,3]]
 var drawn = false;
+
+savedStates = [["frontmatter","","5"],["intro","","X"],["basicTemplate","","X......"],["basicTemplateProperties","","ynnX"],["doubleTemplate","","X......"],["ruleTemplate","[ALVES] [checked] [out] [a] [ITEM] [from] [the] [library] [and] [BISWAS] [checked] [out] [a] [ITEM] [from] [the] [library.];X;;","[ALVES [Andy]] [checked] [out] [a] [ITEM [magazine]] [from] [the] [library] [and] [BISWAS [Bala]] [checked] [out] [a] [ITEM [book]] [from] [the] [library.];0d;ITEM;...X"],["nestingTemplate","[ALVES] [checked] [out] [a] [ITEM] [from] [the] [library] [and] [BISWAS] [checked] [out] [a] [ITEM] [from] [the] [library.];X;;","[ALVES [Andy]] [checked] [out] [a] [ITEM [GENRE [children’s]] [book]] [from] [the] [library] [and] [BISWAS [Bala]] [checked] [out] [a] [ITEM [GENRE [nonfiction]] [movie]] [from] [the] [library.];0d0;GENRE;X"],["recursiveTemplate","[ALVES] [checked] [out] [a] [ITEM] [from] [the] [library] [and] [BISWAS] [checked] [out] [a] [ITEM] [from] [the] [library.];X;;","[ALVES [Andy]] [checked] [out] [a] [ITEM [ITEM [magazine]] [and] [a] [ITEM [magazine]]] [from] [the] [library] [and] [BISWAS [Bala]] [checked] [out] [a] [ITEM [ITEM [magazine]] [and] [a] [ITEM [ITEM [magazine]] [and] [a] [ITEM [magazine]]]] [from] [the] [library.];0d0;ITEM;X"],["recursiveQuestions","","nnX"],["epsilonTemplate","[ALVES] [checked] [out] [a] [ITEM] [from] [the] [library] [and] [BISWAS] [checked] [out] [a] [ITEM] [from] [the] [library.];X;;","[ALVES [Andy]] [checked] [out] [a] [ITEM [GENRE [ε]] [book]] [from] [the] [library] [and] [BISWAS [Bala]] [checked] [out] [a] [ITEM [ITEM [GENRE [ε]] [movie]] [and] [a] [ITEM [magazine]]] [from] [the] [library.];0d3;ITEM;X"],["startSTemplate","","Ari checked out a book and a nonfiction movie;X"],["templateReview","","X"],["treeBasics","","SUVX;n;X"],["treeTemplate","[S];X;;[S];X;;","[S];X;;[S [A [A [t]] [B [o]]] [A [t] [o]]];01;A;.X"],["treeVocab",";","nonterm;.X"],["treeGenerateAll",";[S];XX;","X;[S [B [A [o]]] [A [y] [C [y]] [o]]];011;C;o;t o;t y y o;t y o o o;y y o;y o o o;o o;o y y o"],["readingTrees",";;;;","t o y;o y t;y y o t;t o;....X"],["ruleFromTree",";","A > t C;X"],["badRuleInTree","[S [A [A [t]] [C [B [o]] [A [t]]]] [B [B [B [o]] [C [y]]] [A [t]]] [C [C [y]] [A [A [t]] [B [o]]]]];XX;","[S [A [A [t]] [C [B [o]] [A [t]]]] [B [B [B [o]] [C [y]]] [A [t]]] [C [C [y]] [A [A [t]] [B [o]]]]];001;.X"],["labelTrees",";[!S [!o] [… [!o]]];01;[!S [!t] [… [!t]]];01;[!S [!t] [… [!y]]];01;[!S [!y] [… [… [!o]] [!C […]]]];XX;[!S […] [… [… [!o]] [… [!y]]]];XX;","X....;[!S [!o] [B [!o]]];01;[!S [!t] [A [!t]]];01;[!S [!t] [B [!y]]];01;[!S [!y] [C [B [!o]] [!C [y]]]];010;[!S [y] [C [B [!o]] [C [!y]]]];00;"],["drawAnyTree",";[S];XX","X.;[S [A [y] [S [o] [o]]] [o]];0011"],["parsing",";[S];XX;[S];XX;[S];XX","X...;[S [t] [A [S [A [S [o] [o]] [t]] [o]] [t]]];010001;[S [B [t] [S [t] [A [y] [S [y] [t]]]]] [y]];001111;[S [B [o] [B [t] [S [t] [A [t] [o]]]]] [y] [t]];001111"],["ambiguity","[S];XX;[S];XX;","[S [they] [VERB [said] [S [they] [VERB [left]]]] [TIME [at] [dawn]]];XX;[S [they] [VERB [said] [S [they] [VERB [left]] [TIME [at] [dawn]]]]];XX;.X"],["modelingMorpho",";-1;choose;;;","X.....;-1;under;adapt er;;0000;over;[S [S [globe]] [er]];XX;0010;over;[S [re] [S [globe]]];XX;0011;under;re re adapt;;0012;over;[S [S [globe]] [ize]];XX;123;over;[S [A [N [V [adapt]] [er]] [al]]];XX;133;choose;;"],["modelingPalindromes",";[S];XX;[S];XX;;;;[S];XX;;;","X........;[S [S [e] [v] [e]] [S [v] [e] [e] [v]]];002;[S [e] [v] [S [v] [e] [e] [v]]];023;S → l v S v l;S → l S l;l e v e l;[S [l] [S [e] [v] [e]] [l]];02;S → v;S → ε;no"],["modelingEnglishNumbers",";;;;;[S];XX","X.....;SUB-HUND>SUB-TEN|TEENS|-TY|-TY SUB-TEN;SUB-THOU>SUB-HUND|SUB-TEN hundred SUB-HUND|SUB-TEN hundred;SUB-MILL>SUB-THOU thousand|SUB-THOU|SUB-THOU thousand SUB-THOU;SUB-BILL>SUB-MILL|SUB-THOU million SUB-MILL|SUB-THOU million;[S [SUB-BILL [SUB-THOU [SUB-HUND [-TY [fifty]]]] [million] [SUB-MILL [SUB-THOU [SUB-TEN [five]] [hundred]] [thousand] [SUB-THOU [SUB-TEN [five]] [hundred] [SUB-HUND [-TY [fifty]] [SUB-TEN [five]]]]]]];0022210"],["modelingYorubaNumbers",";;;;;;A;B;C;D;E;F;G;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;","X.....;S>kan|me ji|me ta|me rin|me fa|me je|me jo|me san -an|me waa|ma run -un;S>kan|me fa|me je|me jo|me san -an|me waa|ma run -un|LOW|LOW la|mo kan la.LOW>me ji|me ta|me rin;S>kan|me fa|me je|me jo|me san -an|me waa|ma run -un|LOW|LOW la|mo kan la|ogun|ogbon|ogo ji|ogo TY-SUFFIX|aado TY-SUFFIX|aado waa.LOW>me ji|me ta|me rin.TY-SUFFIX>ta|rin|run -un|fa|je|jo|san -an;S>kan|me waa|ma run -un|LOW|LOW la|mo kan la|ogun|ogbon|ogo ji|ogo TY-SUFFIX|aado TY-SUFFIX|meed ogun|meed ogbon|ma run dinl ogo ji|ma run dinl TENS|TENS|me SHORTS.LOW>me ji|me ta|me rin.TY-SUFFIX>ta|rin|run -un|SHORTS.TENS>ogo TY-SUFFIX|aado TY-SUFFIX|aado waa.SHORTS>fa|je|jo|san -an;S>kan|me waa|ma run -un|LOW|mo kan la|ogo TY-SUFFIX|aado TY-SUFFIX|meed ogun|meed ogbon|ma run dinl ogo ji|ma run dinl TENS|me SHORTS|LOW-PLUS la|TENS-PLUS|LOW-PLUS lel TENS-PLUS|LOW-PLUS dinl TENS-PLUS.LOW>me ji|me ta|me rin.TY-SUFFIX>ta|rin|run -un|SHORTS.TENS>ogo TY-SUFFIX|aado TY-SUFFIX|aado waa.SHORTS>fa|je|jo|san -an.LOW-PLUS>LOW|mo kan.TENS-PLUS>TENS|ogun|ogbon|ogo ji;LOW;B;TY-SUFFIX;SHORTS;TENS;LOW-PLUS;TENS-PLUS;kan;méjì;mẹ́ta;mẹ́rin;márùn-ún;mẹ́fà;méje;mẹ́jọ;mẹ́sàn-án;mẹ́wàá;mọ́kànlá;méjìlá;mẹ́tàlá;mẹ́rìnlá;mẹ́ẹ̀dógún;ogún;mẹ́ẹ̀dọ́gbọ̀n;ọgbọ̀n;mọ́kànlélọ́gbọ̀n;méjìlélọ́gbọ̀n;mẹ́tàlélọ́gbọ̀n;mẹ́rìnlélọ́gbọ̀n;márùndínlógójì;mẹ́rìndínlógójì;mẹ́tàdínlógójì;méjìdínlógójì;mọ́kàndínlógójì;ogójì;márùndínláàdọ́ta;àádọ́ta;márùndínlọ́gọ́ta;ọgọ́ta;márùndínláàdọ́rin;àádọ́rin;márùndínlọ́gọ́rin;ọgọ́rin;márùndínláàdọ́rùn-ún;àádọ́rùn-ún;márùndínlọ́gọ́rùn-ún;ọgọ́rùn-ún;"],["tempDone","",""]];
+
 </script>
 
 
@@ -128,6 +99,28 @@ if (document.body.className == '') {
     document.body.className = '';
 }
 ">Toggle night mode</button>
+<select id="section-skip" onchange="
+if (document.getElementById('section-skip').value != 'empty') {
+    newOuterState = [];
+    newInnerState = [];
+    progressValue = parseInt(document.getElementById('section-skip').value);
+    for (let i = 0; i <= progressValue; i++) {
+        newOuterState.push(savedStates[i][0]);
+        newInnerState.push(savedStates[i][2]);
+    }
+    newInnerState.pop();
+    newInnerState.push(savedStates[progressValue][1]);
+    state = newOuterState;
+    arrangeSections();
+    putSectionStates(newInnerState);
+    startSections();
+    redrawSections();
+    document.getElementById('banner-out').innerText = getSectionStates();
+    window.scrollBy(0, document.getElementById('main').children[progressValue].getBoundingClientRect().top);
+    window.scrollBy(0, -document.getElementById('banner').getBoundingClientRect().height-5);
+    document.getElementById('section-skip').value = 'empty';
+}
+"><option value="empty" selected>Skip to section</option><option value="1">Introduction</option><option value="2">Basic Template</option><option value="4">Rules</option><option value="6">Nesting</option><option value="7">Recursion</option><option value="9">Extra Notation</option><option value="12">Trees</option><option value="13">Trees and Templates</option><option value="14">Tree Vocab</option><option value="15">Practice with Trees</option><option value="16">Reading Trees</option><option value="17">Identifying Rules</option><option value="18">Finding Bad Rules</option><option value="19">Labeling</option><option value="20">Drawing Trees</option><option value="21">Parsing</option><option value="22">Ambiguity</option><option value="23">English Morphology</option><option value="24">Palindromes</option><option value="25">English Numbers</option><option value="26">Yoruba Numbers</option><option value="27">End</option></select>
 <span id='banner-out' style='display:none'>Test</span>
 <div class="progress-bar" id="progressBar"></div>
 </header>
@@ -2625,7 +2618,6 @@ function parsingFeedback(index) {
             if (newState == '133') {
                 document.getElementById('morpho-outro').style.display = 'block';
                 enableButtons(document.getElementById('morpho-outro'));
-                console.log('broken');
                 break;
             }
             morphoAddSelector(newPart);
@@ -4757,7 +4749,7 @@ function putSectionStates(statesArray) {
     if (i < statesArray.length) {
         allSections[i].dataset.state = statesArray[i];
         if (sectionRedraws.has(allSections[i].id)) {
-            sectionRedraws.get(allSections[i].id)(allSections[i].dataset.state);
+            //sectionRedraws.get(allSections[i].id)(allSections[i].dataset.state);
         }
     } else {
         allSections[i].dataset.state = allSections[i].dataset.initialState;
